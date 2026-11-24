@@ -2,6 +2,14 @@ name: Test and publish Koi Lune
 on:
   push:
     branches: [main]
+    paths:
+      - '*.html'
+      - '*.js'
+      - '*.css'
+      - 'package*.json'
+      - 'assets/**'
+      - 'tests/**'
+      - '.github/workflows/pages.yml' 
   workflow_dispatch:
 permissions:
   contents: read
@@ -12,7 +20,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   test-and-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +49,7 @@ jobs:
           path: _site
   deploy:
     needs: test-and-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
