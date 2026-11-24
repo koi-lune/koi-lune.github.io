@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101535"><meta name="description" content="青髪の占い師と白猫が案内する、星降る恋の占い館。タロット、相性、恋みくじ、心理テスト、選択で変わる恋物語を無料で。">
+<meta property="og:title" content="Koi Lune 〜星降る恋の占い館〜"><meta property="og:description" content="今夜、あなたの恋に小さな星明かりを。5つの無料ゲームでひと息。"><meta property="og:type" content="website">
+<title>Koi Lune 〜星降る恋の占い館〜</title>
+<link rel="icon" href="./assets/icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css">
+<script type="module" src="./app.js"></script>
+</head>
+<body>
+<a class="skip" href="#stage">ゲームへスキップ</a>
+<header class="topbar"><a class="wordmark" href="#home" aria-label="Koi Lune ホーム">☾ <span>KOI LUNE</span></a><div class="header-actions"><button id="sound" class="icon-button" aria-pressed="false" aria-label="効果音をオンにする">♪ OFF</button><button id="open-history" class="icon-button">恋の手帳 <span id="history-count">0</span></button></div></header>
+<div class="hero" id="hero"><img src="./assets/hero.webp" width="1536" height="512" alt="星空に手を伸ばす青髪の占い師と、魔法の本に乗った白猫" fetchpriority="high"><div class="hero-veil"></div><div class="hero-title"><p class="eyebrow">A LITTLE MAGIC FOR YOUR HEART</p><h1>Koi Lune</h1><p class="hero-sub">星降る恋の占い館</p><p class="hero-line">今夜、あなたの恋に<br>小さな星明かりを。</p></div><span class="hero-badge">登録不要・ずっと無料</span></div>
+<main id="main">
+<div class="welcome"><img src="./assets/cat.webp" alt="案内役の白猫" width="64" height="64"><p><span class="eyebrow">WELCOME TO OUR ATELIER</span><br><span id="welcome-text">「いらっしゃい。今日はどの星に会いに行く？」</span></p></div>
+<div class="section-label"><h2>5つの星の扉</h2><span>気になる扉をひとつ。</span></div>
+<nav id="menu" class="game-menu" aria-label="ゲームを選ぶ"></nav>
+<section id="stage" class="stage" tabindex="-1" aria-label="ゲーム画面"></section>
+<div class="subnav"><button id="open-album">✧ タロット図鑑 <span id="album-count">0 / 22</span></button><button id="open-about">館の案内・データについて</button></div>
+<aside class="note-invite"><div><p class="eyebrow">AFTER THE MAGIC</p><h2>星のヒントを、明日の一歩に。</h2><p>恋の悩みをゆっくりほどく読みもの。<br>「恋の作戦会議室」で、ひと息ついていってね。</p></div><a href="https://note.com/koi_lune" target="_blank" rel="noopener noreferrer" class="button">noteを読む <span aria-hidden="true">↗</span></a></aside>
+</main>
+<footer><p class="footer-brand">☾ Koi Lune</p><p>占い・診断は娯楽です。未来や相手の気持ちを確定するものではありません。<br>自分と相手の気持ち、意思を大切にしてね。</p><small>© Koi Lune · 恋の作戦会議室 / koi_lune</small></footer>
+<div id="toast" role="status" aria-live="polite"></div><div id="magic" aria-hidden="true"></div>
+<noscript><p>ゲームを遊ぶにはJavaScriptを有効にしてね。</p></noscript>
+</body></html>
