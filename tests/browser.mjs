@@ -6,8 +6,9 @@ import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 let pw;try{pw=await import('playwright');}catch{pw=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
 const root=path.resolve(new URL('..',import.meta.url).pathname),out=path.join(root,'test-results');await fs.mkdir(out,{recursive:true});
+const serveRoot=process.env.SITE_DIR?path.resolve(root,process.env.SITE_DIR):root;
 let server;
-if(!process.env.BASE_URL){server=http.createServer(async(req,res)=>{try{const relative=decodeURIComponent(new URL(req.url,'http://localhost').pathname).replace(/^\/koi-lune\//,'');const name=relative===''?'index.html':relative;const file=path.resolve(root,name);if(!file.startsWith(root+path.sep))throw Error('outside');const content=await fs.readFile(file);res.setHeader('content-type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp','.svg':'image/svg+xml'})[path.extname(file)]||'application/octet-stream');res.end(content);}catch{res.writeHead(404);res.end('not found');}});await new Promise(resolve=>server.listen(4173,'127.0.0.1',resolve));}
+if(!process.env.BASE_URL){server=http.createServer(async(req,res)=>{try{const relative=decodeURIComponent(new URL(req.url,'http://localhost').pathname).replace(/^\/koi-lune\//,'');const name=relative===''?'index.html':relative;const file=path.resolve(serveRoot,name);if(!file.startsWith(serveRoot+path.sep))throw Error('outside');const content=await fs.readFile(file);res.setHeader('content-type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp','.svg':'image/svg+xml'})[path.extname(file)]||'application/octet-stream');res.end(content);}catch{res.writeHead(404);res.end('not found');}});await new Promise(resolve=>server.listen(4173,'127.0.0.1',resolve));}
 const base=process.env.BASE_URL||'http://127.0.0.1:4173/koi-lune/';
 const report={date:new Date().toISOString(),base,checks:[],errors:[]};
 async function check(name,fn){await fn();report.checks.push(name);console.log('PASS '+name);}
