@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {CARDS,QUESTIONS} from '../data.js';
-import {STORAGE_KEY,emptyState,loadState,sanitizeState,persistState,affinity,fortune,japanDay,drawTarot,quizResult,storyEnding,addResult,shareURL} from '../engine.js';
+import {STORAGE_KEY,emptyState,loadState,sanitizeState,persistState,affinity,fortune,japanDay,drawTarot,quizResult,storyEnding,addResult,shareURL,wrapTextLines} from '../engine.js';
 const memory=()=>{const values=new Map();return {getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v)};};
 const result=(i=0)=>({id:String(i),game:'tarot',title:'星',text:'今日のヒント',action:'深呼吸',date:'2026-11-24T00:00:00Z',cards:[{id:i%22,reversed:false}]});
 test('22 cards have distinct complete readings and illustration cells',()=>{assert.equal(CARDS.length,22);assert.equal(new Set(CARDS.map(c=>c.name)).size,22);CARDS.forEach((c,i)=>{assert.equal(c.id,i);for(const k of ['upright','reversed','action','keyword'])assert.ok(c[k].length>0);assert.notEqual(c.upright,c.reversed);});});
@@ -17,3 +17,5 @@ test('bad legacy shapes, malformed JSON, and denied storage do not crash',()=>{f
 test('stored data schema strips invalid indices, invalid paths and unknown results',()=>{const cleaned=sanitizeState({cards:[-1,22,0,0,'1'],history:[null,{...result(),cards:[{id:99,reversed:true}]}],endings:['promise','__proto__','constructor'],story:{choices:[0,7]},sound:'yes'});assert.deepEqual(cleaned.cards,[0]);assert.equal(cleaned.history.length,1);assert.deepEqual(cleaned.history[0].cards,[]);assert.deepEqual(cleaned.endings,['promise']);assert.equal(cleaned.story,null);assert.equal(cleaned.sound,false);});
 test('only incomplete valid story paths resume',()=>{assert.deepEqual(sanitizeState({story:{choices:[0,1,0]}}).story,{choices:[0,1,0]});assert.equal(sanitizeState({story:{choices:Array(6).fill(0)}}).story,null);});
 test('share URL strips query, fragment, and omits full result text',()=>{const url=new URL(shareURL({...result(),text:'private nickname'},'https://example.com/koi-lune/?secret=1#affinity'));assert.equal(url.origin,'https://twitter.com');assert.equal(url.searchParams.get('url'),'https://example.com/koi-lune/');assert.ok(!url.href.includes('private'));assert.ok(url.searchParams.get('text').includes('#KoiLune'));});
+
+test('Japanese result-image wrapping keeps punctuation with the preceding character',()=>{const measure=s=>[...s].length*10;for(const text of ['ふたりで歩こう。','ありがとう「またね」','ひと休みして、また明日。','星🌙と猫。']){const lines=wrapTextLines(measure,text,70);assert.equal(lines.join(''),text);assert.ok(lines.every(l=>measure(l)<=70));assert.ok(lines.every(l=>!/^([、。）」』】])/u.test(l)));assert.ok(lines.every(l=>!/[「『【（]$/u.test(l)));}assert.deepEqual(wrapTextLines(measure,'\n星\n',70),['','星','']);});
