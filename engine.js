@@ -19,3 +19,8 @@ export function loadState(storage){try{const raw=storage.getItem(STORAGE_KEY);if
 export function persistState(storage,state){try{storage.setItem(STORAGE_KEY,JSON.stringify(state));return true;}catch{return false;}}
 export function addResult(state,result){const clean=cleanResult(result);if(!clean)throw new Error('Invalid result');state.history=[clean,...state.history].slice(0,30);if(result.game==='tarot')state.cards=[...new Set([...state.cards,...clean.cards.map(c=>c.id)])];if(clean.ending)state.endings=[...new Set([...state.endings,clean.ending])];return clean;}
 export function shareURL(result,pageURL){const url=new URL(pageURL);url.hash='';url.search='';const summary=`Koi Lune｜${result.title}\n${result.action||'今夜の恋に、小さな星明かりを。'}\n#KoiLune #恋の作戦会議室`;const target=new URL('https://twitter.com/intent/tweet');target.searchParams.set('text',summary);target.searchParams.set('url',url.href);return target.href;}
+
+export function wrapTextLines(measure,text,width){
+ const lines=[];const closing=/^[、。，．！？!?：:；;）)］\]｝}〉》」』】ー]/u;const opening=/[（(［\[｛{〈《「『【]$/u;
+ for(const para of text.split('\n')){let line='';for(const c of para){if(measure(line+c)>width&&line){if(closing.test(c)||opening.test(line)){const chars=[...line],carry=chars.pop();if(chars.length)lines.push(chars.join(''));line=carry+c;}else{lines.push(line);line=c;}}else line+=c;}lines.push(line);}return lines;
+}

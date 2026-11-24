@@ -29,7 +29,7 @@ npx playwright install --with-deps chromium webkit
 npm run test:browser
 ```
 
-純粋な計算と保存処理の13テストに加え、ChromiumとWebKitで画面操作・保存・PNG・再開・6画面幅・エラー時動作を検証します。心理テスト256通り、物語64通りはロジックテストで全探索します。実際のiPhone/Android端末での動作を保証するものではありません。
+純粋な計算・保存処理と画像の文字組みの14テストに加え、ChromiumとWebKitで画面操作・保存・PNG・再開・6画面幅・エラー時動作を検証します。心理テスト256通り、物語64通りはロジックテストで全探索します。実際のiPhone/Android端末での動作を保証するものではありません。
 
 ## 公開
 
