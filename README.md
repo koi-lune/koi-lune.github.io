@@ -1,6 +1,6 @@
 # Koi Lune 〜星降る恋の占い館〜
 
-[▶ 無料で遊ぶ](https://pyokoyu.github.io/koi-lune/) · [テスト結果](./TEST_REPORT.md)
+[▶ 無料で遊ぶ](https://koi-lune.github.io/) · [テスト結果](./TEST_REPORT.md)
 
 青髪の占い師と白猫が案内する、5種類の無料恋愛ゲーム。添付試作版を基にしたブラウザゲームです。
 
@@ -35,7 +35,7 @@ npm run test:browser
 
 ## 公開
 
-専用の公開リポジトリ `pyokoyu/koi-lune` のGitHub Pagesを使用します。Settings → Pages → SourceをGitHub Actionsに設定。mainへのpush後、公開用のHTML・JS・CSSにコミット単位のバージョンを付け、その配信ファイルをブラウザでテストしてから公開します。古いプログラムがブラウザに残ることによる更新漏れを防ぎます。公開リポジトリの標準ランナーとPagesの無料枠を使い、有料オプションは使用しません。
+専用の公開リポジトリ `koi-lune/koi-lune.github.io` のGitHub Pagesを使用します。Settings → Pages → SourceをGitHub Actionsに設定。mainへのpush後、公開用のHTML・JS・CSSにコミット単位のバージョンを付け、その配信ファイルをブラウザでテストしてから公開します。古いプログラムがブラウザに残ることによる更新漏れを防ぎます。公開リポジトリの標準ランナーとPagesの無料枠を使い、有料オプションは使用しません。
 
 釣りゲーム・note自動生成システムには依存せず、それらのファイル／設定を変更しません。
 
