@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101535">
+<title>16タイプ恋愛診断 | Koi Lune</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.quiz {max-width:42rem;margin:2rem auto;padding:1rem}
+.quiz fieldset {border:0;padding:0;margin:1rem 0}
+.quiz legend {font-weight:bold;margin-bottom:1rem}
+.quiz label {display:flex;align-items:center;gap:.75rem;padding:.75rem;border:1px solid #777aa5;border-radius:.5rem;margin:.4rem 0;cursor:pointer}
+.quiz label:has(:checked) {background:#333962}
+.quiz input {accent-color:#e7c989}
+.quiz progress {width:100%;accent-color:#e7c989}
+.quiz a {text-decoration:underline}
+.quiz .actions {margin-top:1rem}
+</style>
+</head>
+<body>
+<main class="quiz">
+<a href="../">← Koi Luneへ戻る</a>
+<h1>16タイプ恋愛診断</h1>
+<p>24問・約4分。恋愛での普段の行動を思い浮かべて答えてね。</p>
+<p class="muted">Koi Lune独自の娯楽向け診断です。回答は送信・保存しません。</p>
+<div id="game"></div>
+<noscript>診断を遊ぶにはJavaScriptを有効にしてください。</noscript>
+</main>
+<script type="module">
+const axes = [
+  '交流のペース',
+  '情報の受け取り方',
+  '意見のすり合わせ方',
+  '予定の決め方'
+];
+
+// Pairs alternate which side of each axis agreement favors.
+const questions = [
+  ['好きな人と会った日は、帰ってからもメッセージで話を続けたくなる。','E'],
+  ['相手への気持ちは、話す前にひとりで整理したい。','I'],
+  ['デート先を考えるときは、まず移動時間や混み具合を調べる。','S'],
+  ['デート先を考えるときは、そこでどんな思い出ができそうか想像する。','N'],
+  ['意見が合わないときは、双方が納得できる基準を先に考える。','T'],
+  ['意見が合わないときは、まず相手が何に引っかかったかを聞く。','F'],
+  ['デートの行き先や待ち合わせ時間は、早めに決まると落ち着く。','J'],
+  ['休日のデートは、その日の気分で行き先を決めたい。','P'],
+  ['仲良くなりたい相手には、自分から話題を振ることが多い。','E'],
+  ['ふたりで話しているとき、少し沈黙が続いても心地よく感じる。','I'],
+  ['相手が前に話した好みや注文を覚えていて、次のデートに生かす。','S'],
+  ['何気ない会話から、ふたりでやってみたいことが次々と思い浮かぶ。','N'],
+  ['相談を受けたら、何から解決できそうか一緒に整理したくなる。','T'],
+  ['相談を受けたら、相手がどんな気持ちだったかをまず聞きたくなる。','F'],
+  ['旅行では、宿や移動手段を押さえてから細かい行き先を考える。','J'],
+  ['旅行では、気になる場所を見つけたら寄れるよう余白を残したい。','P'],
+  ['気まずいことがあっても、話しながら自分の考えがまとまる。','E'],
+  ['大事な話のあとには、自分だけで考え直す時間が欲しい。','I'],
+  ['好意は、約束を守るなど相手の具体的な行動から感じる。','S'],
+  ['相手と将来の可能性を話し合うと、距離が縮まったと感じる。','N'],
+  ['デートの費用でもめたら、次から使える公平な分け方を決めたい。','T'],
+  ['デートの費用でもめたら、まずお互いが何を遠慮していたか話したい。','F'],
+  ['会う日が決まってから別れると、次まで安心して過ごせる。','J'],
+  ['会う日は先に固定せず、ふたりに余裕ができたときに声をかけたい。','P']
+];
+const pairs = ['EI','SN','TF','JP'];
+const choices = ['まったく当てはまらない','あまり当てはまらない','どちらとも言えない','やや当てはまる','とても当てはまる'];
+const tips = {
+ E:['自分から会話を始めやすい','返事を急かしてしまうことがある','「返事は時間があるときで大丈夫だよ」'],
+ I:['考えてから落ち着いて気持ちを伝えやすい','考えている間に関心がないように見えることがある','「大事な話だから、少し考えてから返したい」'],
+ S:['小さな約束や相手の好みを覚えて関係を育てやすい','将来の話で具体的な段取りが気になることがある','「楽しそう。まず今度の休みに試してみる？」'],
+ N:['ふたりで楽しめる新しいことを思いつきやすい','先の話が膨らんで、今日決めたいことが残ることがある','「いつかの話も楽しいね。今日は何から決めよう？」'],
+ T:['意見が割れたときに、双方が納得できる基準を考えやすい','解決を急いで相手の気持ちを聞きそびれることがある','「今は聞いてほしい？ 一緒に考えてほしい？」'],
+ F:['相手の事情や気持ちをくみ取りやすい','気を使って自分の希望を後回しにすることがある','「あなたの希望も聞きたいし、私はこうしたい」'],
+ J:['予定を整えて、ふたりの時間を確保しやすい','予定変更を相手の気持ちの変化と受け取りやすいことがある','「今日は難しそうだね。次はいつなら会えそう？」'],
+ P:['急な変更でも、その場で別の楽しみ方を見つけやすい','約束があいまいで相手を待たせることがある','「時間はあとで決めよう。土曜の午後は空けておくね」']
+};
+const game = document.querySelector('#game');
+let answers = [];
+let step = 0;
+
+function showQuestion() {
+  const [question] = questions[step];
+  game.innerHTML = `<form>
+    <p>質問 ${step + 1} / ${questions.length}</p>
+    <progress value="${step + 1}" max="${questions.length}" aria-label="診断の進み具合"></progress>
+    <fieldset><legend tabindex="-1">${question}</legend>
+      ${choices.map((label, index) => `<label><input type="radio" name="answer" value="${index}" required ${answers[step] === index ? 'checked' : ''}>${label}</label>`).join('')}
+    </fieldset>
+    <div class="actions"><button type="button" id="back" ${step === 0 ? 'disabled' : ''}>戻る</button>
+    <button type="submit" class="primary">${step === questions.length - 1 ? '結果を見る' : '次へ'}</button></div>
+  </form>`;
+  const form = game.querySelector('form');
+  form.addEventListener('change', event => { answers[step] = Number(event.target.value); });
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    answers[step] = Number(new FormData(form).get('answer'));
+    step += 1;
+    if (step === questions.length) showResult();
+    else showQuestion();
+  });
+  game.querySelector('#back').addEventListener('click', () => { step -= 1; showQuestion(); });
+  game.querySelector('legend').focus();
+}
+
+function showResult() {
+  const results = pairs.map(pair => {
+    const score = questions.reduce((sum, [, side], index) => {
+      if (!pair.includes(side)) return sum;
+      return sum + (answers[index] - 2) * (side === pair[0] ? 1 : -1);
+    }, 0);
+    return {pair, score, letter:score === 0 ? '×' : pair[score > 0 ? 0 : 1]};
+  });
+  const near = results.filter(({score}) => Math.abs(score) <= 2);
+  const type = results.map(({letter}) => letter).join('');
+  const closest = near.find(({score}) => score === 0) ?? near.reduce((a,b) =>
+    !a || Math.abs(b.score) < Math.abs(a.score) ? b : a, null);
+  const alternative = closest && results.map(result => {
+    if (result !== closest) return result.letter;
+    return result.score === 0 ? `[${result.pair[0]}/${result.pair[1]}]` :
+      result.pair[result.score > 0 ? 1 : 0];
+  }).join('');
+  const strongest = [...results].sort((a,b) => Math.abs(b.score) - Math.abs(a.score))[0];
+  const advice = Math.abs(strongest.score) > 2 ? tips[strongest.letter] : null;
+  game.innerHTML = `<section class="stage">
+    <h2 tabindex="-1">あなたの傾向は ${type}${type.includes('×') ? '' : ' 寄り'}</h2>
+    ${type.includes('×') ? '<p>×は左右の点数が同じ軸です。</p>' : ''}
+    <dl>${results.map(({pair,score,letter},index) => `<dt>${axes[index]}（${pair[0]} / ${pair[1]}）</dt>
+      <dd>${Math.abs(score) <= 2 ? 'ほぼ中間' : Math.abs(score) <= 6 ? `${letter}にやや傾く` : `${letter}への傾きが強い`}
+      <br><meter min="-12" max="12" value="${-score}" aria-label="${pair[0]}から${pair[1]}への傾き"></meter>
+      ${pair[0]} ← ${Math.abs(score)} / 12 → ${pair[1]}</dd>`).join('')}</dl>
+    ${alternative ? `<p>近い結果の候補は ${alternative}。中間の軸は場面によって変わりそうです。</p>` : ''}
+    ${advice ? `<h3>恋愛での強み</h3><p>${advice[0]}。</p><h3>すれ違いやすい場面</h3><p>${advice[1]}。</p><h3>次に試せるひとこと</h3><p>${advice[2]}</p>` :
+      '<h3>次に試せるひとこと</h3><p>「今日はどうしたい？ 私は今こんな気分だよ」</p>'}
+    <div class="actions"><button id="review">最後の回答を見直す</button><button id="restart">最初からやり直す</button></div>
+  </section>`;
+  game.querySelector('#review').onclick = () => { step = questions.length - 1; showQuestion(); };
+  game.querySelector('#restart').onclick = () => { answers = []; step = 0; showQuestion(); };
+  game.querySelector('h2').focus();
+}
+
+game.innerHTML = '<button class="primary" id="start">診断をはじめる</button>';
+game.querySelector('#start').onclick = showQuestion;
+</script>
+</body>
+</html>
